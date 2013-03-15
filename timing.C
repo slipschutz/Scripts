@@ -12,7 +12,7 @@ using namespace std;
 
 int timing(Int_t num=0)
 {
-  const Int_t n=3;
+  const Int_t n=5;
   TH1F * h[n];
   std::stringstream s;
   for (int i=0;i<n;i++){
@@ -47,7 +47,7 @@ int timing(Int_t num=0)
   }
 
   Double_t timeDiffcor1, timeDiffcor2;
-
+  Double_t timeDiffdtcor1,timeDiffdtcor2;
   flt->SetBranchAddress("Integral0_cor",&integral0);
   flt->SetBranchAddress("Integral1_cor",&integral1);
   flt->SetBranchAddress("Integral2_cor",&integral2);
@@ -55,6 +55,9 @@ int timing(Int_t num=0)
   flt->SetBranchAddress("Time_Diff",&timeDiff);
   flt->SetBranchAddress("Time_Diffgoecor1",&timeDiffcor1);
   flt->SetBranchAddress("Time_Diffgoecor2",&timeDiffcor2);
+
+  flt->SetBranchAddress("Time_Diffdtcor1",&timeDiffdtcor1);
+  flt->SetBranchAddress("Time_Diffdtcor2",&timeDiffdtcor2);
 
 
   
@@ -77,6 +80,8 @@ int timing(Int_t num=0)
 	  h[0]->Fill(timeDiff);
 	  h[1]->Fill(timeDiffcor1);
 	  h[2]->Fill(timeDiffcor2);
+	  h[3]->Fill(timeDiffdtcor1);
+	  h[4]->Fill(timeDiffdtcor2);
 	  count++;
 	}
     }
@@ -105,11 +110,22 @@ int timing(Int_t num=0)
   gr->Draw("AL");
   TGraphErrors *gr = new TGraphErrors(max,x[1],y[1],ex[1],ey[1]);
   gr->SetLineColor(2);
-  gr->Draw("same");
+  //  gr->Draw("same");
 
   TGraphErrors *gr = new TGraphErrors(max,x[2],y[2],ex[2],ey[2]);
   gr->SetLineColor(6);
   gr->Draw("same");
+
+  TGraphErrors *gr = new TGraphErrors(max,x[3],y[3],ex[3],ey[3]);
+  gr->SetLineColor(4);
+  //gr->Draw("same");
+
+
+  TGraphErrors *gr = new TGraphErrors(max,x[4],y[4],ex[4],ey[4]);
+  gr->SetLineColor(2);
+  gr->Draw("same");
+
+
 
   /*
 

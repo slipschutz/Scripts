@@ -18,7 +18,7 @@ TGraphErrors * goeFits(TH2F *h){
 
 
   //GOE goes from -0.6 to 0.6 split into num divisions
-  Double_t Range=.6;
+  Double_t Range=.5;
   Double_t startPoint=-Range/2;
   Double_t step= Range/num;
   cout<<startPoint<<endl;
