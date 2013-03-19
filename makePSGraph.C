@@ -83,7 +83,10 @@ void  makePSGraph()
 	
 	result1=(proj[i][j])->Fit("f1","QSNR");
 	result2=(proj[i][j])->Fit("f2","QSNR");
-	cout<<"LG "<<j+LG_low<<" SG "<<i+SG_low<<" "<<result2->Value(1)-result1->Value(1)<<endl;
+	Int_t s1 = result1;
+	Int_t s2 = result2;
+	if (s1==0 && s2==0)
+	  cout<<"LG "<<j+LG_low<<" SG "<<i+SG_low<<" "<<result2->Value(1)-result1->Value(1)<<endl;
 	//cout<<"{"<<result2->Value(1)-result1->Value(1)<<","<<result1->Value(2)<<","<<result2->Value(2)<<"},"<<endl;
 
       }
