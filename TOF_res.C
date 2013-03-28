@@ -4,12 +4,12 @@
 TGraphErrors* TOF_res(){
 
 
-  Double_t startGamma=-15.6;
-  Double_t endGamma=-14.6;
+  Double_t startGamma=4.5;
+  Double_t endGamma=5.5;
 
   const Int_t numProjections=40;
-
-  Double_t range=400;
+ 
+  Double_t range=200;
   Double_t startPoint=0;
   Double_t step =(range-startPoint)/numProjections;
   TH1D * projections[numProjections];
@@ -43,11 +43,11 @@ TGraphErrors* TOF_res(){
       
       flt->GetEntry(I);
       
-      if ( Event->channels[0] ==2 && Event->channels[2]==8 && TMath::Abs(Event->CorGOE)<0.5 && (Event->PulseShape)<1.12){
+      if ( Event->channels[0] ==2 && Event->channels[2]==8 && TMath::Abs(Event->CorGOE)<0.5 && (Event->PulseShape)<1.04){
 	
 	if (Event->energiesCor[0]>= cutE && Event->energiesCor[1]>=cutE){
 	  
-	  projections[j]->Fill(Event->TOFW[1]);
+	  projections[j]->Fill(Event->TOFW[0]);
 	  projectionsOrig[j]->Fill(Event->ShiftTOF);
 	}
 	
@@ -83,8 +83,8 @@ TGraphErrors* TOF_res(){
     result = projections[i]->Fit("f1","QSNR");
     Int_t status=result;
     if (status==0){
-      y[i]=result->Value(2);
-      ey[i]=result->UpperError(2);
+      y[i]=result->Value(2)*2.35*10000;
+      ey[i]=result->UpperError(2)*2.35*10000;
     } else {
       y[i]=0;
       ey[i]=0;
@@ -93,8 +93,8 @@ TGraphErrors* TOF_res(){
     result = projectionsOrig[i]->Fit("f1","QSNR");
     status=result;
     if (status==0){
-      y1[i]=result->Value(2);
-      ey1[i]=result->UpperError(2);
+      y1[i]=result->Value(2)*2.35*10000;
+      ey1[i]=result->UpperError(2)*2.35*10000;
     } else {
       y1[i]=0;
       ey1[i]=0;

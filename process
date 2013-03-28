@@ -113,14 +113,15 @@ elif [ $allGood -ne 1 ]; then
 	if [ $i -lt 10 ]; then
 	    file=run-0${runNum}-0${i}.root;
         elif [ $i -ge 10 ];then
-	    file=run-0${runNum}-${i}.root;
+	    file=run-${runNum}-${i}.root;
+	    file2=run-0${runNum}-${i}.root;
 	fi
 
 	if [ -f /${path_root}/${file} ]  && [ ! -f /${loc}${file} ]; then
 
 	    echo "This file needs a link: " $file
 	    echo "Linking..."
-	    ln -s /${path_root}/${file} /${loc}/${file}
+	    ln -s /${path_root}/${file} /${loc}/${file2}
 	fi
     done
 fi

@@ -4,8 +4,9 @@
 TGraphErrors* TOF_walk(){
 
 
-  Double_t startGamma=-15.6;
-  Double_t endGamma=-14.8;
+  Double_t startGamma=4.5;
+  Double_t endGamma=5;
+
 
   if (gROOT->GetListOfSpecials()->IsEmpty()){
     cout<<"NO TCutG found \nMake a PulseShape cut first"<<endl;
@@ -13,16 +14,19 @@ TGraphErrors* TOF_walk(){
   }
 
   TH2F * E_vs_TOF =new TH2F("E_vs_TOF","E_vs_TOF",1000,-20,20,1000,0,2000);
+  //TH2F * E_vs_TOF =new TH2F("E_vs_TOF","E_vs_TOF",1000,-20,20,1000,0,100);
 
 
-  flt->Project("E_vs_TOF","energiesCor[1]:TOF",
-	       "CUTG && channels[0]==2&&abs(ShiftTOF)<20&&abs(CorGOE)<0.5&&channels[2]==8");
+  flt->Project("E_vs_TOF","energiesCor[0]:ShiftTOF",
+         "CUTG && channels[0]==2&&abs(TOF)<20&&abs(CorGOE)<0.5&&channels[2]==8");
+
+  //flt->Project("E_vs_TOF","energies[1]:TOFW[1]");
 
   Int_t channel=0;
-  const Int_t numProjections=40;
+  const Int_t numProjections=20;
 
-  Double_t range=600;
-  Double_t startPoint=0;
+  Double_t range=200;
+  Double_t startPoint=10;
   Double_t step =(range-startPoint)/numProjections;
   TH1D * projections[numProjections];
 
@@ -71,7 +75,7 @@ TGraphErrors* TOF_walk(){
 
   TGraphErrors *gr =new TGraphErrors(numProjections,x,y,ex,ey);
   
-  TCanvas *c = new TCanvas("c22");
+  TCanvas *c = new TCanvas("c22w");
 
   c->cd(1);
   gr->Draw("AL*");
