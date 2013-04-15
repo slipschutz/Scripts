@@ -28,7 +28,7 @@ void BenchLE(){
 
   TRandom3 *rand = new TRandom3(30523);
 
-  int num=1000000;
+  int num=100000;
 
   std::vector <UShort_t> trace(100);
   for (int i=0;i<100;i++)

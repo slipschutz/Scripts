@@ -17,7 +17,7 @@ int timing(Int_t num=0)
   std::stringstream s;
   for (int i=0;i<n;i++){
     s<<"h"<<i;
-    h[i] =new TH1F(s.str().c_str(),"",100,11,11.7);//run268
+    h[i] =new TH1F(s.str().c_str(),"",100,10.8,11.8);//run268
     s.str("");
   }
   //  TH1F *h = new TH1F("h","h",100,9.7,10.4);//run116
@@ -96,18 +96,21 @@ int timing(Int_t num=0)
       if (status == 0){
 	//cout<<"{"<<result->Value(2)*10000*2.35/TMath::Sqrt(2)<<","<<result->UpperError(2)*10000*2.35/TMath::Sqrt(2)<<"},"<<endl;
 	x[i][j]=j*step;
-	y[i][j]=result->Value(2)*10000*2.35/TMath::Sqrt(2);
+	y[i][j]=result->Value(2)*10000*2.35;///TMath::Sqrt(2);
 	ex[i][j]=0;
-	ey[i][j]=result->UpperError(2)*10000*2.35/TMath::Sqrt(2);
+	ey[i][j]=result->UpperError(2)*10000*2.35;///TMath::Sqrt(2);
       }
       h[i]->Reset();
     }
   }
 	 
   TGraphErrors *gr = new TGraphErrors(max,x[0],y[0],ex[0],ey[0]);
+  gr->GetHistogram()->SetMaximum(1800.);
+  gr->GetHistogram()->SetMinimum(500.);
   TCanvas * c1 = new TCanvas("CC");
   c1->cd(1);
   gr->Draw("AL");
+  /*
   TGraphErrors *gr = new TGraphErrors(max,x[1],y[1],ex[1],ey[1]);
   gr->SetLineColor(2);
   //  gr->Draw("same");
@@ -125,7 +128,7 @@ int timing(Int_t num=0)
   gr->SetLineColor(2);
   gr->Draw("same");
 
-
+  */
 
   /*
 
