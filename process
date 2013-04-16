@@ -125,6 +125,7 @@ elif [ $allGood -ne 1 ]; then
     for ((i=0;i<$num;i++)); do
 	if [ $i -lt 10 ]; then
 	    file=run-0${runNum}-0${i}.root;
+	    file2=run-0${runNum}-0${i}.root;
         elif [ $i -ge 10 ];then
 	    file=run-${runNum}-${i}.root;
 	    file2=run-0${runNum}-${i}.root;
@@ -142,9 +143,11 @@ fi
 cd ${runDir};
 if [ ! -f NeutronBuilder ]; then
     ln -s ../NeutronBuilder/NeutronBuilder
+    echo "Linking NeutronBuilder"
 fi
 
-if [ ! -f GammaBuilder ]; then
+if [ ! -f GammaBuilder ]; the
+    echo "Linking GammaBuilder"
     ln -s ../GammaBuilder/GammaBuilder
 fi
 
@@ -153,9 +156,14 @@ if [ $build -eq 1 ]; then
 
     if [ $gamma -eq 1 ]; then
 	command="./GammaBuilder $runNum numFiles:$num timingMode:${timing}" 
+	cd ../GammaBuilder;
     elif [ $neutron -eq 1 ]; then 
 	command="./NeutronBuilder $runNum numFiles:$num timingMode:${timing}" 
+	cd ../NeutronBuilder;
     fi
+
+    hash=$(git rev-parse HEAD)
+    cd ${runDir};
 
     ${command};
 
@@ -169,16 +177,20 @@ build_end=`date`;
 dump_time=$((`date "+%s" -d "${dumper_end}"` - `date "+%s" -d "${dumper_start}"`)) ;
 build_time=$((`date "+%s" -d "${build_end}"` - `date "+%s" -d "${build_start}"`)) ;
 
-builder_date=`ls -ltrh EvtBuilder | awk '{print $6 " " $7}' | head -1`
+
+
 
 echo;echo;
-summary="Run ${runNum} was processed. Build command was ${command}\n";
+summary="Run ${runNum} was processed. Build command was:\n ${command}\n";
 summary="${summary}the options were:\n";
 summary="${summary}doDDASdumper ${doDDASdump}\n"
 summary="${summary}build ${build}\n"
+summary="${summary}Gamma ${gamma}\n"
+summary="${summary}Neutron ${neutron}\n"
+summary="${summary}The most resent commit for the builder was:\n ${hash}\n";
 summary="${summary}\nTime elapsed for the dumper was ${dump_time} seconds";
 summary="${summary}\nTime elapsed for the builder was ${build_time} seconds\n";
-summary="${summary}The time code on the builder was ${builder_date}";
+
 
 if [ $mail -eq 1 ]; then
     subject="Run_${runNum}_on_`date "+%d_%m_%y_%H_%M_%S"`";
