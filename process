@@ -15,13 +15,17 @@ runNum=0;
 build=0;
 mail=0;
 timing="internalCFD"
-while getopts ":dr:bmt:" Option
+gamma=0;
+neutron=0;
+while getopts ":dr:bmt:ng" Option
 do
   case $Option in
     d     ) doDDASdump=1;;
     r     ) runNum=$OPTARG;;
     b     ) build=1;;
     m     ) mail=1;;
+    n     ) neutron=1;;
+    g     ) gamma=1;;
     t     ) timing=$OPTARG;;
     *     ) echo "Unimplemented option chosen.";;   # DEFAULT
   esac
@@ -35,6 +39,17 @@ echo "Error:"
 echo "ssh to daq machine as cedaq to run dumper"
 exit;
 fi
+
+if [ ${neutron} -eq 0 ] && [ ${gamma} -eq 0 ] && [ ${build} -eq 1 ]; then
+echo "Specify -g for gamma builder or -n for neutron builder"
+exit;
+fi
+
+if [ ${neutron} -eq 1 ] && [ ${gamma} -eq 1 ] && [ ${build} -eq 1 ]; then
+echo "Choose one"
+exit;
+fi
+
 
 loc=`pwd`
 path_evt='/mnt/daqtesting/lenda/experiment/run'${runNum}
@@ -62,8 +77,6 @@ fi
 dumper_end=`date`;    
 
 
-
-
 ##script is run from sam_analysis directory
 cd $loc
 
@@ -78,9 +91,9 @@ fi
 cd ./run${runNum};
 runDir=`pwd`;
 
-cd ${loc}
+cd ${runDir}
 
-##check to see if all the files are in sam_analysis
+##check to see if all the files are in the run directory
 allGood=1;
 
 for ((i=0;i<$num;i++)); do 
@@ -121,31 +134,36 @@ elif [ $allGood -ne 1 ]; then
 
 	    echo "This file needs a link: " $file
 	    echo "Linking..."
-	    ln -s /${path_root}/${file} /${loc}/${file2}
+	    ln -s /${path_root}/${file} /${runDir}/${file2}
 	fi
     done
 fi
-
-## make sure I am in location of the builder
-cd ${loc};
-command="./EvtBuilder $runNum numFiles:$num timingMode:${timing}"
-build_start=`date`;
-if [ $build -eq 1 ]; then
-    ${command};
-    build_end=`date`;
-    name=`ls -lthr | tail -1 | awk '{print $8}'`;
-    `mv -i ${name} ${runDir}`;
+##make links for builders
+cd ${runDir};
+if [ ! -f NeutronBuilder ]; then
+    ln -s ../NeutronBuilder/NeutronBuilder
 fi
-###Move links to run directory
-for ((i=0;i<$num;i++)); do
-    if [ $i -lt 10 ]; then
-        file=run-0${runNum}-0${i}.root;
-    elif [ $i -ge 10 ];then
-        file=run-0${runNum}-${i}.root;
-    fi
-    `mv ${loc}/${file} ${runDir}`;
 
-done
+if [ ! -f GammaBuilder ]; then
+    ln -s ../GammaBuilder/GammaBuilder
+fi
+
+build_start=`date`;
+if [ $build -eq 1 ]; then 
+
+    if [ $gamma -eq 1 ]; then
+	command="./GammaBuilder $runNum numFiles:$num timingMode:${timing}" 
+    elif [ $neutron -eq 1 ]; then 
+	command="./NeutronBuilder $runNum numFiles:$num timingMode:${timing}" 
+    fi
+
+    ${command};
+
+fi
+build_end=`date`;
+
+
+
 
 
 dump_time=$((`date "+%s" -d "${dumper_end}"` - `date "+%s" -d "${dumper_start}"`)) ;
