@@ -55,6 +55,7 @@ int FindSpot (TH1F * h,int start=400,int endd=900)
 
     if ( h->GetBinContent(i) <= twoThirdmax ){
       cout<<"bin is "<<i <<" Bin center is "<<h->GetBinCenter(i)<<endl;
+      cout<<"341.0/num "<<341.0/h->GetBinCenter(i)<<endl;
       break;
     }
 

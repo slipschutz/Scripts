@@ -54,8 +54,6 @@ TGraphErrors* TOF_pos(){
     projections[i]->SetTitle("TOF");
     s.str("");
   }
-
-
   TF1 *f1 = new TF1("f1","gaus",startGamma,endGamma);
   
 

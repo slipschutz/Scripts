@@ -51,25 +51,30 @@ exit;
 fi
 
 
-loc=`pwd`
+top_dir='/mnt/daqtesting/lenda/sam_analysis'
 path_evt='/mnt/daqtesting/lenda/experiment/run'${runNum}
 path_root='/mnt/daqtesting/lenda/rootfiles/'
+path_analysis='/mnt/daqtesting/lenda/sam_analysis'
+
+loc=$top_dir
 
 cd $path_evt
 num=`ls | wc -l`
 
 dumper_start=`date`;
 if [ $doDDASdump -eq 1 ]; then 
-    cd ~/neutron/DDAS/ddasdumper
+    cd /user/cedaq/neutron/DDAS/ddasdumper
     
     
     for ((i=0;i<$num;i++)); do
 	
 	if [ $i -lt 10 ]; then
+	    echo 
 	    ./ddasdumper --source=file://${path_evt}/run-0${runNum}-0${i}.evt --fileout=${path_root}/run-0${runNum}-0${i}.root
 	fi
 	
 	if [ $i -ge 10 ]; then
+	    echo
 	    ./ddasdumper --source=file://${path_evt}/run-0${runNum}-${i}.evt --fileout=${path_root}/run-${runNum}-${i}.root
 	fi
     done
@@ -131,7 +136,7 @@ elif [ $allGood -ne 1 ]; then
 	    file2=run-0${runNum}-${i}.root;
 	fi
 
-	if [ -f /${path_root}/${file} ]  && [ ! -f /${loc}${file} ]; then
+	if [ -f /${path_root}/${file} ]  && [ ! -f /${runDir}/${file} ]; then
 
 	    echo "This file needs a link: " $file
 	    echo "Linking..."
@@ -146,7 +151,7 @@ if [ ! -f NeutronBuilder ]; then
     echo "Linking NeutronBuilder"
 fi
 
-if [ ! -f GammaBuilder ]; the
+if [ ! -f GammaBuilder ]; then
     echo "Linking GammaBuilder"
     ln -s ../GammaBuilder/GammaBuilder
 fi
@@ -155,18 +160,16 @@ build_start=`date`;
 if [ $build -eq 1 ]; then 
 
     if [ $gamma -eq 1 ]; then
-	command="./GammaBuilder $runNum numFiles:$num timingMode:${timing}" 
+	command="./GammaBuilder $runNum numFiles:$num";
 	cd ../GammaBuilder;
     elif [ $neutron -eq 1 ]; then 
-	command="./NeutronBuilder $runNum numFiles:$num timingMode:${timing}" 
+	command="./NeutronBuilder $runNum numFiles:$num"; 
 	cd ../NeutronBuilder;
     fi
 
-    hash=$(git rev-parse HEAD)
+    hash=$(git rev-parse HEAD);
     cd ${runDir};
-
     ${command};
-
 fi
 build_end=`date`;
 

@@ -4,8 +4,11 @@
 TGraphErrors* TOF_res(){
 
 
-  Double_t startGamma=-66.;
-  Double_t endGamma=-65.4;
+  //  Double_t startGamma=-65.5;
+  // Double_t endGamma=-64.8;
+
+  Double_t startGamma=0;
+  Double_t endGamma=1;
 
   const Int_t numProjections=30;
  
@@ -47,8 +50,8 @@ TGraphErrors* TOF_res(){
       
       flt->GetEntry(I);
       
-      if ( Event->channels[0] ==2 && Event->channels[2]==8 && TMath::Abs(Event->CorGOE)<0.5&&
-	   Event->PulseShape<1.04){
+      if ( Event->channels[0] ==2 && Event->channels[2]==8 && TMath::Abs(Event->CorGOE)<0.5){
+
 
 	
 	if (Event->energiesCor[0]>= cutE && Event->energiesCor[1]>=cutE &&
@@ -141,9 +144,9 @@ TGraphErrors* TOF_res(){
   TCanvas *c = new TCanvas("c22");
 
   c->cd(1);
-  gr->Draw("AL*");
-  grOrig->Draw("same");
-  g2->Draw("same");
+  //  gr->Draw("AL*");
+  grOrig->Draw("AL");
+  //g2->Draw("same");
   return gr;
   
 }
