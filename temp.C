@@ -1,24 +1,57 @@
 
 
+#include <iomanip>
+#include <iostream>
+#include <vector>
+#include "TTree.h"
+
+#include "TFile.h"
+
+
+
+using namespace std;
+
+
 
 int temp()
 {
 
-  TCanvas *c = new TCanvas();
-  c->Divide(2,2);
-  c->cd(1);
-  flt->Draw("longGate/shortGate:shortGate","abs(longGate/shortGate)<3 &&shortGate<15000");
+  gSystem->Load("../ddasChannel/libddaschannel-m64.so");
+  ddaschannel *chan = new ddaschannel();
+
+  TFile *inFile = new TFile("./run-0319-00.root");
+  
+  TTree * t = (TTree*) inFile->Get("dchan");
+
+
+  t->SetBranchAddress("dchan",&chan);
 
 
 
-  c->cd(2);
-  flt->Draw("longGate2/shortGate2:shortGate2","abs(longGate2/shortGate2)<3 &&shortGate2<15000");
+  
+  ofstream out("./remco.txt");
+  
+  
 
-  c->cd(3);
-  flt->Draw("longGate3/shortGate3:shortGate3","abs(longGate3/shortGate3)<3 &&shortGate3<15000");
 
-  c->cd(4);
-  flt->Draw("longGate4/shortGate4:shortGate4","abs(longGate4/shortGate4)<3 &&shortGate4<15000");
 
+  for (int i=0;i<1000000;i++){
+    dchan->GetEntry(i);
+
+    double time = chan->timelow + chan->timehigh*TMath::Power(2,32.0);
+    double time2 = chan->timecfd/TMath::Power(2,16.0);
+    //    out<<chan->chanid<<"  "<<setw(6)<<chan->energy<<"  "<<setw(13)<<setprecision(8)<<time<<"  "<<time2<<endl;
+    out<<chan->chanid<<" "<<chan->energy<<" "<<setprecision(16)<<time<<" "<<time2<<endl;
+    
+    //    cout<<chan->chanid<<"   "<<setprecision(16)<<chan->time<<"   ";
+    // dchan->GetEntry(i-1);
+    // cout<<time-chan->time<<endl;
+      
+  }
+
+
+  
+
+  return 0;
 
 }

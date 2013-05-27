@@ -30,8 +30,19 @@ void MatrixPol(){
   
   invertA.Print();
 
+  TMatrixD Y(4,1);
+  Y[0][0]=1;
+  Y[1][0]=5;
+  Y[2][0]=-1;
+  Y[3][0]=2;
 
+  cout<<"Y I S"<<endl;
+  Y.Print();
 
+  TMatrixD res(4,1);
+
+  res = invertA*Y;
+  res.Print();
 
 
 
