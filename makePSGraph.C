@@ -8,10 +8,10 @@ void  makePSGraph()
 {
 
   
-  int SG_low=6;
-  int SG_high=12;
-  int LG_low=16;
-  int LG_high=26;
+  int SG_low=8;
+  int SG_high=10;
+  int LG_low=12;
+  int LG_high=14;
   
   const int SG_range=SG_high-SG_low;
   const int LG_range=LG_high-LG_low;
@@ -58,7 +58,7 @@ void  makePSGraph()
 	flt->Project(name.str().c_str(),cmd.str().c_str(),cuts.str().c_str());
 
 
-	flt->Project("hh","PulseShape:shortGates[2]","abs(PulseShape)<3");
+	flt->Project("hh","longGates[2]/shortGates[2]:shortGates[2]","abs(PulseShape)<3 &&NumOfChannelsInEvent==3 &&channels[0]==0&&ErrorBit==0");
 
       }else{
 	cout<<"Got Zombie at SG"<<i<<" LG "<<j<<endl;

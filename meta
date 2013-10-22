@@ -36,21 +36,29 @@ if [ $numFiles -eq -1 ]; then
     exit 1;
 fi
 num=0;
-for ((FL=2;FL<4;FL++)); do
+max=8;
+for ((FL=3;FL<6;FL++)); do
     for ((FG=0;FG<2;FG++)); do
-    	for ((d=3;d<4;d++));do
-	    for ((w=4;w<8;w++));do
+    	for ((d=2;d<4;d++));do
+	    for ((w=0;w<5;w++));do
 		num=$(($num + 1));
 		##Bash doesn't like decimals so w is divided by 10 within builder
-		./EvtBuilder $runNum numFiles:$numFiles FL:$FL FG:$FG d:$d w:$w &> log_${runNum}_${FL}_${FG}_${d}_${w} &
+		./GammaBuilder $runNum numFiles:$numFiles FL:$FL FG:$FG d:$d w:$w lean:true &> log_${runNum}_${FL}_${FG}_${d}_${w} &
+		echo "./GammaBuilder $runNum numFiles:$numFiles FL:$FL FG:$FG d:$d w:$w lean:true &> log_${runNum}_${FL}_${FG}_${d}_${w} &"
+		loop=1;
+		while [ $loop -eq 1 ]; do
+		    current=$(ps aux | grep GammaBuilder-m64 | wc -l)
+		    echo "current is" $current
+		    if [ $current -lt $max ]; then
+			loop=0;
+		    else
+			sleep 4;
+		    fi
+		done
+		sleep 10
 	    done	    
 	done
-	
-	
-	
     done
-
-    
 done
 
 echo Started $num processes

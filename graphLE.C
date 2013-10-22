@@ -1,9 +1,27 @@
 
 
 
+#include "TTree.h"
+#include <sstream>
+#include "TFile.h"
+#include "LendaEvent.hh"
+#include <vector>
+#include "TGraph.h"
+#include "TCanvas.h"
+
+
+
+
+
+
 void graphLE(Long64_t entry=0,int num=2,int spot=0){
 
+
+
   LendaEvent * event = new LendaEvent();
+  
+  TTree* flt =(TTree*)gDirectory->Get("flt");
+  
   flt->SetBranchAddress("Event",&event);
 
   TCanvas *c = new TCanvas("c1");
@@ -12,9 +30,9 @@ void graphLE(Long64_t entry=0,int num=2,int spot=0){
   
   if (num!=1){ //special case
     if (num !=0 ){
-      c.Divide(2,num/2);
-      c1.Divide(2,num/2);
-      c2.Divide(2,num/2);
+      c->Divide(2,num/2);
+      c1->Divide(2,num/2);
+      c2->Divide(2,num/2);
       
     }
     if (num % 2 !=0 ){
@@ -28,26 +46,31 @@ void graphLE(Long64_t entry=0,int num=2,int spot=0){
 
     flt->GetEntry(j);
     
-    event->MakeC(spot);
-    
-    Double_t x[100];
-    Double_t y[100];
+    //    event->MakeC(spot);
+    cout<<"Channel is "<<event->channels[spot]<<endl;
+    int size = (int) event->Traces[spot].size();
 
-    Double_t y1[100];
+    Double_t* x = malloc(size*sizeof(Double_t));
+    Double_t* y = malloc(size*sizeof(Double_t));
+
+    Double_t* y1= malloc(size*sizeof(Double_t));
     
 
-    Double_t y2[100];
+    Double_t* y2=malloc(size*sizeof(Double_t));
     
-    for (int i=0;i<100;i++){
+
+    cout<<"size is "<<size<<endl;
+    for (int i=0;i<size;i++){
+
       x[i]=i;
-      y[i]=event->CTrace[i];
-      y1[i]=event->CFilter[i];
-      y2[i]=event->CCFD[i];
+      y[i]=event->Traces[spot][i];
+      y1[i]=event->Filters[spot][i];
+      y2[i]=event->CFDs[spot][i];
     }
-    
-    TGraph *gr = new TGraph(100,x,y);
-    TGraph *gr1 = new TGraph(100,x,y1);
-    TGraph *gr2 = new TGraph(100,x,y2);
+
+    TGraph *gr = new TGraph(size,x,y);
+    TGraph *gr1 = new TGraph(size,x,y1);
+    TGraph *gr2 = new TGraph(size,x,y2);
     
     stringstream s;
     s<<"Traces row "<<j<<" chan "<<event->channels[spot];

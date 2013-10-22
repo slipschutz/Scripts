@@ -63,7 +63,7 @@ num=`ls | wc -l`
 
 dumper_start=`date`;
 if [ $doDDASdump -eq 1 ]; then 
-    cd /user/cedaq/neutron/DDAS/ddasdumper
+    cd /user/cedaq/neutron/DDAS/ddasdumper_new
     
     
     for ((i=0;i<$num;i++)); do

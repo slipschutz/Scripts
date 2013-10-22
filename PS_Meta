@@ -4,47 +4,45 @@ NO_ARGS=0;
 
 if [ $# -eq "$NO_ARGS" ] ;  # Script invoked with no command-line arguments
 then
-  echo "Usage: ./`basename $0` run_number "
+  echo "Usage: ./`basename $0` runNumber Name_Of_input_File "
   exit 1          # Exit and explain usage, if no argument(s) given.
 fi  
 
-runNum=$1;
+runNum=$1
+fileName=$2
 
-
-if [ $runNum -gt 999 ] || [ $runNum -lt 100 ] 
+if [ ! -f ${fileName} ];
 then
-    echo "Out of supported runNum range"
-    exit 3;
+    echo "Cant Find " ${fileName} "exiting..."
+    exit
 fi
 
-##make sure that the input root files are present
+FileNameFull=$(pwd)/${fileName}
 
-fileName=run-0${runNum}
+if [ ! -f ${FileNameFull} ]; then
+    echo "Can't find " ${FileNameFull} "exiting..."
+    exit;
+fi
 
-numFiles=-1;
+echo "FILE FULL IS " $FileNameFull
 
-if [ -f "${fileName}-softwareCFD-output.root" ];
-then
-
-  numFiles=1	   
-  echo "Found $numFiles files for $fileName"
+FullCommand=$(pwd)/"Corrector"
+echo $FullCommand
+if [ ! -f ${FullCommand} ]; then
+    echo "Can't find " ${FullCommand} "exiting..."
+    exit;
 fi
 
 
-if [ $numFiles -eq -1 ]; then
-    echo "Something went wrong"
-    echo "Could not find the input files"
-    exit 1;
-fi
+
+
 num=0;
 
-name=${fileName}-softwareCFD-output.root
-
-for ((i=10;i<12;i++)); do
-    for ((j=22;j<25;j++)); do
-./NeutronCorrection $runNum inputFile:$name LG:$j SG:$i &> log_SG${i}_LG${j} &
-
-done 
-
+for ((LG=15;LG<18;LG++));do
+    for ((SG=4;SG<8;SG++));do
+	num=$(($num + 1));
+	SubmitSeaside.sh ${FullCommand} $runNum inputFile:${FileNameFull} LG:${LG} SG:${SG} &
+    done	    
 done
+
 
