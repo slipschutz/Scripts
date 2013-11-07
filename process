@@ -197,7 +197,7 @@ summary="${summary}\nTime elapsed for the builder was ${build_time} seconds\n";
 
 if [ $mail -eq 1 ]; then
     subject="Run_${runNum}_on_`date "+%d_%m_%y_%H_%M_%S"`";
-    echo -e $summary | mail -s ${subject} soam5515@yahoo.com
+    echo -e $summary | mail -s ${subject} hill@nscl.msu.edu
 fi 
 
 echo -e $summary;

@@ -243,12 +243,15 @@ void Eff3(TH1F * hN=0){
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //  Doule_t thresh =53.73; // 26.3 KeV 
-  Double_t thresh=0.0;
+  double fudge =10.0;
+  Double_t thresh=503.73;
   stringstream ss112;
-  ss112<<"ErrorBit==0 && NumOfChannelsInEvent==3 && channels[0]==0 && channels[2]==9 &&PulseShape<1.12&&sqrt(energies[0]*energies[1])>"<<thresh;
+  ss112<<"softwareCFDs[0]>0 &&softwareCFDs[1]>0&softwareCFDs[2]>0&&NumOfChannelsInEvent==3 && channels[0]==0 && channels[2]==9 &&longGates[2]/shortGates[2]<1.12&&ShiftTOF>1.5&&sqrt(energies[0]*energies[1])>"<<thresh;
 
-  stringstream ss105;
-  ss105<<"ErrorBit==0 && NumOfChannelsInEvent==3 && channels[0]==0 && channels[2]==9 &&PulseShape<1.05&&sqrt(energies[0]*energies[1])>"<<thresh;
+  
+  
+  //  flt->Draw("TOFEnergy","channels[0]==0&&softwareCFDs[0]>0&&softwareCFDs[1]>0&&softwareCFDs[2]>0&&NumOfChannelsInEvent==3&&channels[2]==9&&longGates[2]/shortGates[2]<1.12&&ShiftTOF>2")
+
 
   cout<<gDirectory->GetName()<<endl;
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,7 +260,7 @@ void Eff3(TH1F * hN=0){
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  TFile frun354("~/analysis/run354/CoRrun-0354-LG17-SG7.root");
+  TFile frun354("~/analysis/run354/CoRFL3FG0d3w0run-0354-tw100-softwareCFD.root");
   TH1D * NWithCubicTimes=new TH1D("NWithCubicTimes","",70,bins);
   TH1D * NWithInternalTimes=new TH1D("NWithInternalTimes","",70,bins);
 
@@ -267,12 +270,12 @@ void Eff3(TH1F * hN=0){
   flt->Project("NWithInternalTimes","TOFEnergyInternal",ss112.str().c_str());
   NWithCubicTimes->SetDirectory(0);
   NWithInternalTimes->SetDirectory(0);
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  TFile frun354bkg("~/analysis/run354/CoRFL3FG0d3w0run-0354-randombkg2-softwareCFD.root");
+  TFile frun354bkg("~/analysis/run354/CoRFL3FG0d3w0run-0354-twrandom1000-softwareCFD.root");
   TH1D * RandomBackGround354WithInternalTimes = new TH1D("RandomBackGround354WithInternalTimes","",70,bins);
   flt->Project("RandomBackGround354WithInternalTimes","TOFEnergyInternal",ss112.str().c_str());
 
@@ -285,25 +288,25 @@ void Eff3(TH1F * hN=0){
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  TFile frun355("~/analysis/run355/CoRrun-0355-LG17-SG7.root");
+  TFile frun355("~/analysis/run355/CoRFL3FG0d3w0run-0355-tw100-softwareCFD.root");
   TH1D * ShadowBarRun=new TH1D("ShadowBarRun","",70,bins);
   TH1D * ShadowBarRunInternalTimes=new TH1D("ShadowBarRunInternalTimes","",70,bins);
   
-  flt->Project("ShadowBarRun","TOFEnergy",ss105.str().c_str());
-  flt->Project("ShadowBarRunInternalTimes","TOFEnergyInternal",ss105.str().c_str());
+  flt->Project("ShadowBarRun","TOFEnergy",ss112.str().c_str());
+  flt->Project("ShadowBarRunInternalTimes","TOFEnergyInternal",ss112.str().c_str());
 
   ShadowBarRun->SetDirectory(0);
   ShadowBarRunInternalTimes->SetDirectory(0);
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  TFile frun355bkg("~/analysis/run355/CoRFL3FG0d3w0run-0355-randombkg2-softwareCFD.root");
+  TFile frun355bkg("~/analysis/run355/CoRFL3FG0d3w0run-0355-tw1000random-softwareCFD.root");
   TH1D * ShadowBarRandomBackGround = new TH1D("ShadowBarRandomBackGround","",70,bins);
-  flt->Project("ShadowBarRandomBackGround","TOFEnergy",ss105.str().c_str());
+  flt->Project("ShadowBarRandomBackGround","TOFEnergy",ss112.str().c_str());
   ShadowBarRandomBackGround->SetDirectory(0);
 
   TH1D * ShadowBarRandomBackGroundInternal = new TH1D("ShadowBarRandomBackGroundInternal","",70,bins);
-  flt->Project("ShadowBarRandomBackGroundInternal","TOFEnergyInternal",ss105.str().c_str());
+  flt->Project("ShadowBarRandomBackGroundInternal","TOFEnergyInternal",ss112.str().c_str());
   ShadowBarRandomBackGroundInternal->SetDirectory(0);
 
   TH1F * hresult= new TH1F ("hresult","",70,bins);
@@ -311,34 +314,45 @@ void Eff3(TH1F * hN=0){
   TH1F * NSubtracted= new TH1F ("NSubtracted","",70,bins);
 
   Double_t errors[71];
+  Double_t errorsNB[71];
   Double_t errorNsub[71];
   Double_t errorShadowSub[71];
 
   errors[0]=0;
+  errorsNB[0]=0;
   errorNsub[0]=0;
   errorShadowSub[0]=0;
 
   for (int i=1;i<=70;i++){
     Double_t nV, bkgV, bkg355V, bkg354V;
+    //cubicTimes
+    
     nV= NWithCubicTimes->GetBinContent(i); //data run
     bkgV=ShadowBarRun->GetBinContent( i);//shadow bar run
-    bkg355V =ShadowBarRandomBackGroundInternal->GetBinContent(i);//random coin build shadow bar
+    bkg355V =ShadowBarRandomBackGround->GetBinContent(i);//random coin build shadow bar
     bkg354V = RandomBackGround354WithCubicTimes->GetBinContent(i);//random coin build normal run
-
-    // hresult->SetBinContent(i, N->GetBinContent(i)-(bkg->GetBinContent(i)-bkg355->GetBinContent(i)) -bkg354->GetBinContent(i) );
-    // shadowBarSubtracted->SetBinContent(i,bkg->GetBinContent(i)-bkg355->GetBinContent(i));
-    // NSubtracted->SetBinContent(i,N->GetBinContent(i)-bkg354->GetBinContent(i));
-    // errors[i-1]= sqrt( fn*fn +   fbkg*fbkg  +  fbkg355*fbkg355  +   fbkg354*fbkg354);
     
-    hresult->SetBinContent(i,nV -(bkgV-bkg355V)-bkg354V);
-    shadowBarSubtracted->SetBinContent(i,bkgV-bkg355V);
-    NSubtracted->SetBinContent(i,nV-bkg354V);
+
+    /*
+    //Internal times
+    nV= NWithInternalTimes->GetBinContent(i); //data run
+    bkgV=ShadowBarRunInternalTimes->GetBinContent( i);//shadow bar run
+    bkg355V =ShadowBarRandomBackGroundInternal->GetBinContent(i);//random coin build shadow bar
+    bkg354V = RandomBackGround354WithInternalTimes->GetBinContent(i);//random coin build normal run
+    */
 
 
-    errorNsub[i]=sqrt( pow(sqrt(nV),2) + pow(sqrt(bkg354V),2));
-    errorShadowSub[i]=sqrt( pow(sqrt(bkgV),2) + pow(sqrt(bkg355V),2));
-    errors[i]=sqrt (pow(sqrt(nV),2) + pow(sqrt(bkg354V),2)+pow(sqrt(bkgV),2) + pow(sqrt(bkg355V),2));
 
+
+    hresult->SetBinContent(i,nV -(bkgV-(bkg355V/fudge))-(bkg354V/fudge));
+    shadowBarSubtracted->SetBinContent(i,bkgV-(bkg355V/fudge));
+    NSubtracted->SetBinContent(i,nV-(bkg354V/fudge));
+
+
+    errorNsub[i]=sqrt( pow(sqrt(nV),2) + pow(sqrt(bkg354V)/fudge,2));
+    errorShadowSub[i]=sqrt( pow(sqrt(bkgV),2) + pow(sqrt(bkg355V)/fudge,2));
+    //    errors[i]=sqrt (pow(sqrt(nV),2) + pow(sqrt(bkg354V),2)+pow(sqrt(bkgV),2) + pow(sqrt(bkg355V),2));
+    errors[i]=sqrt( pow(errorNsub[i],2)+pow(errorShadowSub[i],2));
   }
 
   hresult->SetError(errors);
@@ -349,18 +363,30 @@ void Eff3(TH1F * hN=0){
   TH1F * hresultNB= new TH1F ("hresultNB","",70,bins);
   TH1F * shadowBarSubtractedNB= new TH1F ("shadowBarSubtractedNB","",70,bins);
   TH1F * NSubtractedNB= new TH1F ("NSubtractedNB","",70,bins);
+
+  TH1D * NWithCubicTimesNB=new TH1D("NWithCubicTimesNB","",70,bins);
+  TH1D * NWithInternalTimesNB=new TH1D("NWithInternalTimesNB","",70,bins);
+
+  TH1D * RandomBackGround354WithInternalTimesNB = new TH1D("RandomBackGround354WithInternalTimesNB","",70,bins);
+  TH1D * RandomBackGround354WithCubicTimesNB = new TH1D("RandomBackGround354WithCubicTimesNB","",70,bins);
   
   for (int i=1;i<=70;i++){
     hresultNB->SetBinContent(i,hresult->GetBinContent(i)/(hresult->GetBinWidth(i)));
-    errors[i]=errors[i]/(hresult->GetBinWidth(i));
+    errorsNB[i]=errors[i]/(hresult->GetBinWidth(i));
 
     shadowBarSubtractedNB->SetBinContent(i,shadowBarSubtracted->GetBinContent(i)/(shadowBarSubtracted->GetBinWidth(i)));
     errorShadowSub[i]=errorShadowSub[i]/(shadowBarSubtracted->GetBinWidth(i));
 
     NSubtractedNB->SetBinContent(i,NSubtracted->GetBinContent(i)/(NSubtracted->GetBinWidth(i)));
     errorNsub[i]=errorNsub[i]/(NSubtracted->GetBinWidth(i));
+    
+    NWithInternalTimesNB->SetBinContent(i,NWithInternalTimes->GetBinContent(i)/NWithInternalTimes->GetBinWidth(i));
+    NWithCubicTimesNB->SetBinContent(i,NWithCubicTimes->GetBinContent(i)/NWithCubicTimes->GetBinWidth(i));
+
+    //    RandomBackGround354WithInternalTimesNB->
+
   }
-  hresultNB->SetError(errors);
+  hresultNB->SetError(errorsNB);
   NSubtractedNB->SetError(errorNsub);
   shadowBarSubtractedNB->SetError(errorShadowSub);
 
@@ -401,10 +427,11 @@ void Eff3(TH1F * hN=0){
   
   for (int i=0;i<71;i++){
     eff->SetBinContent(i+1,Double_t((hresult->GetBinContent(i+1)))/(Yield->GetBinContent(i+1)));
-
+    if (i!=70)
+      errors[i+1]=errors[i+1]/Yield->GetBinContent(i+1);
 
   }
-  
+  eff->SetError(errors);
   TCanvas * cC = new TCanvas("c");
   cC->cd(1);
   eff->Draw();
@@ -414,6 +441,10 @@ void Eff3(TH1F * hN=0){
   hresult->Write();
   NWithCubicTimes->Write();
   NWithInternalTimes->Write();
+
+  NWithCubicTimesNB->Write();
+  NWithInternalTimesNB->Write();
+
   ShadowBarRun->Write();
   ShadowBarRunInternalTimes->Write();
   ShadowBarRandomBackGround->Write();
@@ -421,7 +452,7 @@ void Eff3(TH1F * hN=0){
   RandomBackGround354WithCubicTimes->Write();
   RandomBackGround354WithInternalTimes->Write();
 
-  shadowBarSubtractedNB-Write();
+  shadowBarSubtractedNB->Write();
   NSubtractedNB->Write();
   hresultNB->Write();
 
