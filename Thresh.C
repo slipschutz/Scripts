@@ -6,7 +6,20 @@
 void Thresh(){
 
 
-  Double_t x[]={1083,3501,85.37,1527,53.73,151.29};
+  //This is the old data
+  //  Double_t x[]={1083,3501,85.37,1527,53.73,151.29};
+
+  //this is Jaspers runs
+  //  Double_t x[]={1067.5,3442.5,78.39,1515,37.44,150.73};
+
+  //from Jasper
+  //  Double_t x[]={1071,3447,73,1510,38,154}; 
+  //Done by sam using jaspers runs 368-370
+  //  Double_t x[]={912.5,2907.5,68.76,1237.5,36.0929,117.459}; // chan 0
+  Double_t x[]={1277.5,4112.5,101.123,1867.5,42.4504,182.592}; // chan 1
+
+
+
 
   Double_t xLiq[]={3346,10234,252.00,4593.00,65.44,494.28};
   Double_t exLiq[]={14,
@@ -23,7 +36,7 @@ void Thresh(){
 
   for (int i=0;i<6;i++){
     
-    ex[i]=sqrt(ex[i]*ex[i] + (per*x[i]*per*x[i]));
+    ex[i]=sqrt(0*ex[i]*ex[i] + (per*x[i]*per*x[i]));
     exLiq[i]=sqrt(exLiq[i]*exLiq[i] + (per*xLiq[i]*per*xLiq[i]));
     
     
@@ -35,8 +48,8 @@ void Thresh(){
   //  c->Divide(2,1);
   c->cd(1);
 
-  gROOT->SetStyle("Pub");
-  /*
+  ///  gROOT->SetStyle("Pub");
+  
   g->GetXaxis()->SetTitle("ADC Units");
   g->GetXaxis()->SetTitleSize(0.05);
   g->GetXaxis()->SetTitleOffset(1.4);
@@ -53,11 +66,11 @@ void Thresh(){
   g->Fit("pol1");
   g->GetFunction("pol1")->SetLineColor(kBlack);
   g->GetFunction("pol1")->SetLineWidth(2);
-  */
+  
 
   // c->cd(2);
 
-  
+  /*  
   g1->GetXaxis()->SetTitle("ADC Units");
  
   g1->GetYaxis()->SetTitle("Energy keV_{ee}");
@@ -70,6 +83,6 @@ void Thresh(){
   g1->Draw("AP");
   g1->SetTitle("Trig Scint Threshold");
   g1->Fit("pol1");
-
+  */
 
 }

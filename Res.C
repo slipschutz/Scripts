@@ -319,7 +319,7 @@ TGraphErrors* Res(){
       s.str("");
   }
 
-  numEntries=200000;
+  //  numEntries=200000;
   for (int I=0;I<numEntries;I++){
     if (I% 10000==0)
       cout<<"on "<<I<<endl;
@@ -349,7 +349,7 @@ TGraphErrors* Res(){
 	}
 	
       }//end for over j
-    } else if (Event->channels[0] ==0 && Event->channels[1]==1&& Event->channels[2]==2&& Event->channels[3]==3 && TMath::Abs(Event->GOE)<0.6&&
+    } else if (Event->channels[0] ==0 && Event->channels[1]==1&& Event->channels[2]==2&& Event->channels[3]==3 &&
 	       Event->energies[0]>0&&Event->energies[1]>0 &&Event->energies[3]>0&&Event->energies[3]>0&& Event->NumOfChannelsInEvent==4 && 
 	       Event->softwareCFDs[0]>0 && Event->softwareCFDs[1]>0 && Event->softwareCFDs[2]>0 && Event->softwareCFDs[3]>0){
       //this does not have same conditions as other one righ now
@@ -359,7 +359,7 @@ TGraphErrors* Res(){
 	
         if (Event->energies[0] + Event->energies[1]>=cutE && Event->energies[2] + Event->energies[3]>cutE&&
             Event->energies[0] + Event->energies[1]<maxE && Event->energies[2] + Event->energies[3]<maxE){
-	  
+
 	  CprojectionsTimeDiff[j]->Fill(0.5*(Event->cubicTimes[0]+Event->cubicTimes[1]-Event->cubicTimes[2]-Event->cubicTimes[3]));
 	  projectionsTimeDiff[j]->Fill(0.5*(Event->times[0]+Event->times[1]-Event->times[2]-Event->times[3]));
 	  

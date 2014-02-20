@@ -1,4 +1,4 @@
-/
+//
 // script to find the bin value coresponding to the 2/3 of the maximum 
 // of first compton edge.  
 // 
@@ -18,7 +18,7 @@
 
 
 
-int FindSpot (TH1F * h,int start=400,int endd=900)
+int FindSpot (TH1F* h,int start=100,int endd=200)
 {
 
   

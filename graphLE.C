@@ -24,9 +24,9 @@ void graphLE(Long64_t entry=0,int num=2,int spot=0){
   
   flt->SetBranchAddress("Event",&event);
 
-  TCanvas *c = new TCanvas("c1");
-  TCanvas *c1 = new TCanvas("c2");
-  TCanvas *c2 = new TCanvas("c3");
+  TCanvas *c = new TCanvas("c12");
+  TCanvas *c1 = new TCanvas("c22");
+  TCanvas *c2 = new TCanvas("c32");
   
   if (num!=1){ //special case
     if (num !=0 ){
